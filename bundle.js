@@ -5217,6 +5217,15 @@ async function doJBwithPSFreeLapseExploit() {
     }
     let block_id = null;
     let groom_ids = null;
+    try {
+      if (sysi("setuid", 0) == 0) {
+        window.log("\njailbroken, no need to re-jailbrake", "Green");
+        return true;
+      }
+    } 
+    catch (error) {
+      // window.log(error, "red");
+    }
     window.log('Lapse Setup');
     [block_id, groom_ids] = setup(block_fd);
     window.log('Lapse STAGE 1/5: Double free AIO queue entry');
