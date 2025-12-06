@@ -4547,6 +4547,7 @@ async function PayloadLoader(Pfile) {
   // This stub will likely be used to jump to the main payload.
   tmpStubArray[0] = 0x00C3E7FF; // This is raw machine code (hex value)
   try {
+    // Fetch the payload file (e.g., payload.bin) from the server
     const response = await fetch(Pfile);
     if (!response.ok) {
       throw new Error(`Payload ${Pfile} file read error: ${response.status}`);
@@ -5046,6 +5047,7 @@ function checkPlatformIsSupported() {
       ssv_len = 0x58;
       break;
     case "6.50":
+    case "6.72":
       config_target = 0x650;
       ssv_len = 0x48;
       break;
@@ -5089,7 +5091,8 @@ function checkPlatformIsSupported() {
   window.log("Detected FW: PS" + device + " v" + fwVersion + ", Exploit Version: v2.04\n");
   // Supported FW lists
   var supportedFW = {
-    "4": ["7.00", "7.01", "7.02", "7.50", "7.51", "7.55",
+    "4": ["6.99",
+          "7.00", "7.01", "7.02", "7.50", "7.51", "7.55",
           "8.00", "8.01", "8.03", "8.50", "8.52",
           "9.00", "9.03", "9.04", "9.50", "9.51", "9.60"],
     "5": ["0.00"]
@@ -5215,18 +5218,19 @@ async function doJBwithPSFreeLapseExploit() {
     for (let i = 0; i < num_sds; i++) {
       sds.push(new_socket());
     }
-    let block_id = null;
-    let groom_ids = null;
     try {
       if (sysi("setuid", 0) == 0) {
-        window.log("\njailbroken, no need to re-jailbrake", "Green");
-        return true;
+        window.log("\nAlready jailbroken, no need to re-jailbrake", "green");
+        return;
       }
-    } 
-    catch (error) {
-      // window.log(error, "red");
     }
+    catch (error) {
+      //window.log("\nAn error occured during if jailbroken test: " + error, "red");
+    }
+    let block_id = null;
+    let groom_ids = null;
     window.log('Lapse Setup');
+    await sleep(50); // Wait 50ms
     [block_id, groom_ids] = setup(block_fd);
     window.log('Lapse STAGE 1/5: Double free AIO queue entry');
     await sleep(50); // Wait 50ms
