@@ -94,6 +94,9 @@
       );
       return true; // Used for not to show error message on console
     });
+    var autoRunEnabled = true;
+    var countdownValue = 5;
+    var countdownTimer = null;
     // Button click
     document.getElementById("jailbreakBtn").addEventListener("click", () => {
       // Disable to prevent double click
@@ -101,6 +104,10 @@
       document.getElementById("autoRunCheck").disabled = true;
       document.getElementById("autoRunCheck").checked = false;
       document.getElementById("countdown").textContent = "-";
+      if (countdownTimer !== null) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
       outputConsole.textContent = ""; // Clear console log
       try {
         doJBwithPSFreeLapseExploit();
@@ -109,9 +116,6 @@
       }
     });
     // Autorun system
-    var autoRunEnabled = true;
-    var countdownValue = 5;
-    var countdownTimer = null;
     var autoRunCheck = document.getElementById('autoRunCheck');
     var countdownSpan = document.getElementById('countdown');
     var jailbreakBtn = document.getElementById('jailbreakBtn');
