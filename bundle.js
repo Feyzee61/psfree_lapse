@@ -4686,7 +4686,7 @@ async function doLapseExploit() {
     window.log('Lapse STAGE 5/5: Patch kernel');
     await sleep(50); // Wait 50ms
     await patch_kernel(kbase, kmem, p_ucred, restore_info);
-    doCleanup();
+    doCleanup(); // Only works on success
     // Check if it all worked
     try {
       if (sysi('setuid', 0) == 0) {
@@ -4701,10 +4701,25 @@ async function doLapseExploit() {
     }
   } catch (error) {
     window.log("An error occured during Lapse\nPlease restart console and try again...\nError definition: " + error, "red");
-    doCleanup();
+    
+    // Al-Azif's minimal cleanup on failure
+    if (unblock_fd !== -1) {
+      try { close(unblock_fd); } catch (e) {}
+      unblock_fd = -1;
+    }
+    return 0;
+
+  } finally {
+    // Always restore core and priority
+    if (current_core_stored === 1) {
+      try {
+        pin_to_core(current_core);
+        set_rtprio(current_rtprio);
+      } catch (e) {}
+    }
   }
-  return 0;
 }
+
 //================================================================================================
 function checkPlatformIsSupported() {
   var userAgent = navigator.userAgent;
